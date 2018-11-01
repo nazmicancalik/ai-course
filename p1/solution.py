@@ -9,8 +9,8 @@ class Vertex:
         self.value = t
 
     def __str__(self):
-        return str(self.name) + str(self.value)
-
+        # return str(self.name) + str(self.value)
+        return str(self.name)
 class Graph:
     def __init__(self, matrix):
         self.data = {}
@@ -44,11 +44,10 @@ class Graph:
     
     def print_graph(self):
         for key in self.data:
-            print('Key:', key)
+            print('Key:', key, end = " ----> ")
             for value in self.data[key]:
-                print(value)
-            print('____________')
-
+                print(value, end=" ")
+            print()
 def main():
 
     # Check for input file
@@ -60,8 +59,12 @@ def main():
     filename = sys.argv[1]
 
     with open(filename) as f:
-        start = (int(x) for x in next(f).split())
-        destination = (int(x) for x in next(f).split())
+        start_x, start_y = (int(x) for x in next(f).split())
+        start = (start_x,start_y)
+
+        dest_x, dest_y = (int(x) for x in next(f).split())
+        destination = (dest_x,dest_y)
+
         matrix = []
         for line in f:
             matrix.append([int(x) for x in line.split()])
