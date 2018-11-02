@@ -10,7 +10,7 @@ class Vertex:
 
     def __str__(self):
         return str(self.name)
-    
+
 '''
     def __eq__(self,other):
         return self.name[0] == other.name[0] and self.name[1] == other.name[1]
@@ -49,6 +49,14 @@ class Graph:
                     upper_neighbour = Vertex(i-1,j,matrix[i-1][j])
                     self.data[v].append(upper_neighbour)
 
+    def sort_bfs(self):
+        for el in self.data:
+            self.data[el].sort(key= lambda x: x.name[0] * self.col + x.name[1], reverse=True)
+    
+    def sort_dfs(self):
+        for el in self.data:
+            self.data[el].sort(key= lambda x: x.name[0] * self.col + x.name[1], reverse=False)
+    
     def print_graph(self):
         for key in self.data:
             print('Key:', key, end = " ----> ")
@@ -58,8 +66,30 @@ class Graph:
 
 # Breadth First Search
 def bfs(g,start,dest):
-    is_visited = [[] for x in range(g.row)]
+    # Sort the elements for queue order (ascending)
+    g.sort_bfs()
+
+    # Initialize the is visited matrix.
+    is_visited = [[0 for x in range(g.col)] for x in range(g.row)]
+    
+    # Mark start as visited
+    is_visited[start[0]][start[1]] = 1
+    
+    queue = [start]
+    path = []
+    while queue:
+        node = queue.pop(0)
+        is_visited[node[0]][node[1]] = 1
+        path.append(node)
+        if node == dest:
+            break
+        print(g.data)
+        queue = queue + g.data[node]
+
     print(is_visited)
+    print(len(path))
+    print(path)
+    print((len(path) - 1) * 1.0)
 
 def main():
 
@@ -86,9 +116,9 @@ def main():
     print('Destination: ', dest)
 
     graph = Graph(matrix)
-    #graph.print_graph()
+    graph.print_graph()
+    print('--------------------------')
     bfs(graph,start,dest)
-
 # Invoke main.
 if __name__ == "__main__":
     main()
