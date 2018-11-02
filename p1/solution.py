@@ -9,12 +9,19 @@ class Vertex:
         self.value = t
 
     def __str__(self):
-        # return str(self.name) + str(self.value)
         return str(self.name)
+    
+'''
+    def __eq__(self,other):
+        return self.name[0] == other.name[0] and self.name[1] == other.name[1]
+'''
+
 class Graph:
     def __init__(self, matrix):
         self.data = {}
         self.vertices = []
+        self.row = len(matrix)
+        self.col = len(matrix[0])
 
         # Here parse the values and create the graph
         for i, row in enumerate(matrix):
@@ -41,13 +48,19 @@ class Graph:
                 if i > 0 and matrix[i-1][j] == 0:
                     upper_neighbour = Vertex(i-1,j,matrix[i-1][j])
                     self.data[v].append(upper_neighbour)
-    
+
     def print_graph(self):
         for key in self.data:
             print('Key:', key, end = " ----> ")
             for value in self.data[key]:
                 print(value, end=" ")
             print()
+
+# Breadth First Search
+def bfs(g,start,dest):
+    is_visited = [[] for x in range(g.row)]
+    print(is_visited)
+
 def main():
 
     # Check for input file
@@ -63,17 +76,18 @@ def main():
         start = (start_x,start_y)
 
         dest_x, dest_y = (int(x) for x in next(f).split())
-        destination = (dest_x,dest_y)
+        dest = (dest_x,dest_y)
 
         matrix = []
         for line in f:
             matrix.append([int(x) for x in line.split()])
 
     print('Start: ', start)
-    print('Destination: ', destination)
+    print('Destination: ', dest)
 
     graph = Graph(matrix)
-    graph.print_graph()
+    #graph.print_graph()
+    bfs(graph,start,dest)
 
 # Invoke main.
 if __name__ == "__main__":
