@@ -77,9 +77,12 @@ def bfs(g,start,dest):
     print_matrix(is_visited)
     print(len(path))
     print_list(path)
-    print((len(path) - 1) * 1.0)
+    print((len(path) - 1) * 1.00)
 
 def dfs(g,start,dest):
+    # Track Parents
+    parent_map = {}
+
     # Sort the elements for stack order (descending)
     g.sort_bfs()
     # Initialize the is visited matrix.
@@ -103,17 +106,36 @@ def dfs(g,start,dest):
         for next_node in g.data[node]:
             if is_visited[next_node[0]][next_node[1]] == 0:
                 stack.extend([next_node])
+                parent_map[next_node] = node
                 remove_from_stack = False
                 break
         if remove_from_stack:
             stack.pop()
 
     print_matrix(is_visited)
-    
+    path = dfs_path(parent_map,dest)
+    print(len(path))
+    print_list(path)
+    print((len(path) - 1) * 1.00)
+
+# Prints a list of tuple in the asked format
 def print_list(l):
     for el in l:
         print(el[0],el[1])
 
+# Returns the path for the dfs
+def dfs_path(parent_map,target):
+    path = []
+    curr = target
+    while (curr != None):
+        path.insert(0,curr)
+        if curr not in parent_map:
+            break    
+        curr = parent_map[curr]
+
+    return path
+
+# Prints a given matrix in the asked format
 def print_matrix(matrix):
     for i, row in enumerate(matrix):
         for col in range(len(row)):
