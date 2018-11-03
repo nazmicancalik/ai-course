@@ -80,6 +80,36 @@ def bfs(g,start,dest):
     print((len(path) - 1) * 1.00)
 
 def dfs(g,start,dest):
+    # Sort the elements for stack order (descending)
+    g.sort_bfs()
+    # Initialize the is visited matrix.
+    is_visited = [[0 for x in range(g.col)] for x in range(g.row)]
+    
+    # Push the first element into the stack
+    stack = [(start, [start])]
+    while stack:
+        (vertex,path) = stack.pop()
+        # If this vertex is not visited.
+        if is_visited[vertex[0]][vertex[1]] == 0:
+            # Mark as visited
+            is_visited[vertex[0]][vertex[1]] = 1
+            
+            if vertex == dest:
+                break
+            
+            print(g.data[vertex])
+            for neighbour in g.data[vertex]:
+                # stack.append((neighbour, path + [neighbour]))
+                stack.insert(0,(neighbour, path + [neighbour]))
+            if vertex[0] == 2 and vertex[1] == 3:
+                    print('Stack after 2,3', stack)
+    g.print_graph()
+    print_matrix(is_visited)
+    print(len(path))
+    print_list(path)
+    print((len(path) - 1) * 1.00)
+'''
+def dfs(g,start,dest):
     # Track Parents
     parent_map = {}
 
@@ -92,7 +122,6 @@ def dfs(g,start,dest):
     stack = [(start)]
     while stack:
         node = stack[-1]
-
         # If the node is not visited
         if is_visited[node[0]][node[1]] == 0:
             # Mark as visited
@@ -104,9 +133,12 @@ def dfs(g,start,dest):
         remove_from_stack = True
         
         for next_node in g.data[node]:
+            if (node[0] == 2 and node[1] == 3):
+                print('List of the 2,3:', g.data[node], next_node)
             if is_visited[next_node[0]][next_node[1]] == 0:
                 stack.extend([next_node])
-                parent_map[next_node] = node
+                if next_node not in parent_map:
+                    parent_map[next_node] = node
                 remove_from_stack = False
                 break
         if remove_from_stack:
@@ -117,14 +149,15 @@ def dfs(g,start,dest):
     print(len(path))
     print_list(path)
     print((len(path) - 1) * 1.00)
+'''
 
 # Prints a list of tuple in the asked format
 def print_list(l):
     for el in l:
         print(el[0],el[1])
-
 # Returns the path for the dfs
 def dfs_path(parent_map,target):
+    print(parent_map)
     path = []
     curr = target
     while (curr != None):
