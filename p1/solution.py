@@ -84,33 +84,37 @@ def dfs(g,start,dest):
     parent_map = {}
 
     # Sort the elements for stack order (descending)
-    g.sort_bfs()
+    g.sort_dfs()
     # Initialize the is visited matrix.
     is_visited = [[0 for x in range(g.col)] for x in range(g.row)]
     
     # Push the first element into the stack
     stack = [(start)]
     while stack:
-        node = stack[-1]
+        node = stack.pop()
 
         # If the node is not visited
         if is_visited[node[0]][node[1]] == 0:
             # Mark as visited
             is_visited[node[0]][node[1]] = 1
+        else:
+            continue
 
         if node == dest:
             break
 
-        remove_from_stack = True
+        
+        # remove_from_stack = True
         
         for next_node in g.data[node]:
             if is_visited[next_node[0]][next_node[1]] == 0:
                 stack.extend([next_node])
-                parent_map[next_node] = node
-                remove_from_stack = False
-                break
-        if remove_from_stack:
-            stack.pop()
+                if next_node not in parent_map:
+                    parent_map[next_node] = node
+                # remove_from_stack = False
+            #    break
+        #if remove_from_stack:
+         #   stack.pop()
 
     print_matrix(is_visited)
     path = dfs_path(parent_map,dest)
