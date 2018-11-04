@@ -23,19 +23,19 @@ class Graph:
 
                 # Now get the neighbours
                 # Left 
-                if j > 0 and abs(matrix[i][j-1] - cur) <= 1:
+                if j > 0 and abs(matrix[i][j-1] - cur) < 1:
                     left_neighbour = (i,j-1)
                     self.data[v].append(left_neighbour)
                 # Right 
-                if j < len(matrix[0])-1 and abs(matrix[i][j+1] - cur) <= 1:
+                if j < len(matrix[0])-1 and abs(matrix[i][j+1] - cur) < 1:
                     right_neighbour = (i,j+1)
                     self.data[v].append(right_neighbour)
                 # Down
-                if i < len(matrix)-1 and abs(matrix[i+1][j] - cur) <= 1:
+                if i < len(matrix)-1 and abs(matrix[i+1][j] - cur) < 1:
                     down_neighbour = (i+1,j)
                     self.data[v].append(down_neighbour)
                 # Up 
-                if i > 0 and abs(matrix[i-1][j] - cur) <= 1:
+                if i > 0 and abs(matrix[i-1][j] - cur) < 1:
                     upper_neighbour = (i-1,j)
                     self.data[v].append(upper_neighbour)
 
@@ -192,8 +192,8 @@ def main():
     if 'mountain' in filename:
         graph.isMountain = True
     # graph.print_graph()
-    # bfs(graph,start,dest)
-    dfs(graph,start,dest)
+    bfs(graph,start,dest)
+    # dfs(graph,start,dest)
 # Invoke main.
 if __name__ == "__main__":
     main()
