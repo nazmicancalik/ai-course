@@ -1,12 +1,14 @@
 #!/bin/python
 
 import sys
+import math
 
 class Graph:
     def __init__(self, matrix):
         self.data = {}
         self.row = len(matrix)
         self.col = len(matrix[0])
+        self.isMountain = False 
 
         # Here parse the values and create the graph
         for i, row in enumerate(matrix):
@@ -16,21 +18,24 @@ class Graph:
                 v = (i,j)
                 self.data[v] = []
 
+
+                cur = matrix[i][j]
+
                 # Now get the neighbours
                 # Left 
-                if j > 0 and matrix[i][j-1] == 0:
+                if j > 0 and abs(matrix[i][j-1] - cur) <= 1:
                     left_neighbour = (i,j-1)
                     self.data[v].append(left_neighbour)
                 # Right 
-                if j < len(matrix[0])-1 and matrix[i][j+1] == 0:
+                if j < len(matrix[0])-1 and abs(matrix[i][j+1] - cur) <= 1:
                     right_neighbour = (i,j+1)
                     self.data[v].append(right_neighbour)
                 # Down
-                if i < len(matrix)-1 and matrix[i+1][j] == 0:
+                if i < len(matrix)-1 and abs(matrix[i+1][j] - cur) <= 1:
                     down_neighbour = (i+1,j)
                     self.data[v].append(down_neighbour)
                 # Up 
-                if i > 0 and matrix[i-1][j] == 0:
+                if i > 0 and abs(matrix[i-1][j] - cur) <= 1:
                     upper_neighbour = (i-1,j)
                     self.data[v].append(upper_neighbour)
 
@@ -77,7 +82,11 @@ def bfs(g,start,dest):
     print_matrix(is_visited)
     print(len(path))
     print_list(path)
-    print((len(path) - 1) * 1.00)
+    
+    if g.isMountain:
+        print(euclidian_distance(start,dest))
+    else:
+        print((len(path) - 1) * 1.00)
 
 def dfs(g,start,dest):
     # Track Parents
@@ -120,8 +129,15 @@ def dfs(g,start,dest):
     path = dfs_path(parent_map,dest)
     print(len(path))
     print_list(path)
-    print((len(path) - 1) * 1.00)
+    
+    if g.isMountain:
+        print(euclidian_distance(start,dest))
+    else:
+        print((len(path) - 1) * 1.00)
 
+
+def euclidian_distance(a,b):
+    return math.sqrt((a[0]-b[0])**2 + (b[1]-a[1])**2)
 # Prints a list of tuple in the asked format
 def print_list(l):
     for el in l:
@@ -165,12 +181,16 @@ def main():
 
         matrix = []
         for line in f:
-            matrix.append([int(x) for x in line.split()])
+            matrix.append([float(x) for x in line.split()])
 
     print('Start: ', start)
     print('Destination: ', dest)
 
     graph = Graph(matrix)
+
+    # Determine and assign graph type 
+    if 'mountain' in filename:
+        graph.isMountain = True
     # graph.print_graph()
     # bfs(graph,start,dest)
     dfs(graph,start,dest)
