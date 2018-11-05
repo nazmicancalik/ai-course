@@ -39,8 +39,8 @@ class Graph:
         # Here parse the values and create the graph
         for i, row in enumerate(matrix):
             for j, col in enumerate(row):
-                if col == 1:
-                    continue
+                #if col == 1:
+                 #   continue
                 v = (i,j)
                 self.data[v] = []
 
@@ -101,7 +101,7 @@ class Graph:
 # Breadth First Search
 def bfs(g,start,dest, filename):
 
-    out_filename = filename + '_mine_bfs_out.txt'
+    out_filename = filename + '_m_bfs_out.txt'
     out_file = open(out_filename,'w')
 
     # Sort the elements for queue order (ascending)
@@ -142,7 +142,7 @@ def bfs(g,start,dest, filename):
 
 def dfs(g,start,dest, filename):
 
-    out_filename = filename + '_mine_dfs_out.txt'
+    out_filename = filename + '_m_dfs_out.txt'
     out_file = open(out_filename,'w')
 
     # Track Parents
@@ -188,7 +188,7 @@ def dfs(g,start,dest, filename):
 def a_star(g,start,dest, filename):
     
     # Open the files
-    out_filename = filename + '_mine_a_star_out.txt'
+    out_filename = filename + '_m_a_star_out.txt'
     out_file = open(out_filename,'w')
 
     # Positions for checking the neighbours
