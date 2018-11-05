@@ -285,15 +285,22 @@ def a_star(g,start,dest):
         # open_list.sort(key=lambda x: x.f, reverse=False)
         open_list = sorted(open_list)
 
+        # print(open_list)
         # Pop the current one from open list.
         current_node = open_list.pop(0)
         closed_list.append(current_node)
+        
+        
 
         if is_visited[current_node.position[0]][current_node.position[1]] == 1:
             continue
 
         is_visited[current_node.position[0]][current_node.position[1]] = 1
-
+        '''
+        print('*************')
+        print_matrix(is_visited)
+        print('*************')
+        '''
         # Check if it is the solution node
         if current_node == end_node:
             path = []
@@ -306,7 +313,7 @@ def a_star(g,start,dest):
             print_matrix(is_visited)
             print(len(path))
             print_list(path[::-1])
-            print(current_node.g)
+            print(f"{current_node.g:.2f}")
             break
 
         children = []
@@ -320,7 +327,7 @@ def a_star(g,start,dest):
 
             # Check if its walkable
             if g.isMountain:
-                if g.matrix[pos[0]][pos[1]] - g.matrix[current_node.position[0]][current_node.position[1]] > 1.0:
+                if abs(g.matrix[pos[0]][pos[1]] - g.matrix[current_node.position[0]][current_node.position[1]]) > 1.0:
                     continue
             else:
                 if g.matrix[pos[0]][pos[1]] == 1:
