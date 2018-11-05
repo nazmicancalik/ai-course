@@ -99,7 +99,11 @@ class Graph:
             print()
 
 # Breadth First Search
-def bfs(g,start,dest):
+def bfs(g,start,dest, filename):
+
+    out_filename = filename + '_mine_bfs_out.txt'
+    out_file = open(out_filename,'w')
+
     # Sort the elements for queue order (ascending)
     g.sort_bfs()
 
@@ -118,7 +122,7 @@ def bfs(g,start,dest):
         is_visited[node[0]][node[1]] = 1
 
         if node == dest:
-                    break
+            break
         
         for neighbour in g.data[node]:
             if is_visited[neighbour[0]][neighbour[1]] == 0:                
@@ -126,17 +130,17 @@ def bfs(g,start,dest):
                 new_path.append(neighbour)
                 queue.append(new_path)
 
-    print_matrix(is_visited)
-    print(len(path))
-    print_list(path)
+    print_matrix(is_visited, out_file)
+    print(len(path), file=out_file)
+    print_list(path,out_file)
     
     if g.isMountain:
         path_len = path_length(path,g.matrix)
-        print(f'{path_len:.2f}')
+        print(f'{path_len:.2f}',file=out_file)
     else:
-        print(f"{(len(path) - 1.0):.2f}")
+        print(f"{(len(path) - 1.0):.2f}", file=out_file)
 
-def dfs(g,start,dest):
+def dfs(g,start,dest, filename):
     # Track Parents
     parent_map = {}
 
@@ -177,7 +181,7 @@ def dfs(g,start,dest):
     else:
         print(f"{(len(path) - 1.0):.2f}")
 
-def a_star(g,start,dest):
+def a_star(g,start,dest, filename):
     
     # Positions for checking the neighbours
     positions = [(0, 1), (1, 0), (-1, 0), (0, -1)]
@@ -194,16 +198,11 @@ def a_star(g,start,dest):
     open_list.append(start_node)
 
     while open_list:
-        
-        # open_list.sort(key=lambda x: x.f, reverse=False)
         open_list = sorted(open_list)
 
-        # print(open_list)
         # Pop the current one from open list.
         current_node = open_list.pop(0)
         closed_list.append(current_node)
-        
-        
 
         if is_visited[current_node.position[0]][current_node.position[1]] == 1:
             continue
@@ -218,7 +217,6 @@ def a_star(g,start,dest):
                 path.append(current.position)
                 current = current.parent
             
-            #return path[::-1]
             print_matrix(is_visited)
             print(len(path))
             print_list(path[::-1])
@@ -276,9 +274,9 @@ def path_length(path,matrix):
     return path_length 
 
 # Prints a list of tuple in the asked format
-def print_list(l):
+def print_list(l,out_file):
     for el in l:
-        print(el[0],el[1])
+        print(el[0],el[1],file=out_file)
 
 # Returns the path for the dfs
 def dfs_path(parent_map,target):
@@ -293,11 +291,11 @@ def dfs_path(parent_map,target):
     return path
 
 # Prints a given matrix in the asked format
-def print_matrix(matrix):
+def print_matrix(matrix,out_file):
     for i, row in enumerate(matrix):
         for col in range(len(row)):
-            print(matrix[i][col], end=" ")
-        print()
+            print(matrix[i][col], end=" ",file=out_file)
+        print(file=out_file)
 
 def main():
 
@@ -320,19 +318,18 @@ def main():
         for line in f:
             matrix.append([float(x) for x in line.split()])
 
-    print('Start: ', start)
-    print('Destination: ', dest)
-
     # Determine and assign graph type 
     problemMountain = False 
     if 'mountain' in filename:
         problemMountain = True
+    
     graph = Graph(matrix,problemMountain)
+    # Cut the .txt part
+    filename = filename[:-4]
+    bfs(graph,start,dest,filename)
+    dfs(graph,start,dest,filename)
+    a_star(graph,start,dest,filename)
 
-    # graph.print_graph()
-    # bfs(graph,start,dest)
-    # dfs(graph,start,dest)
-    a_star(graph,start,dest)
 # Invoke main.
 if __name__ == "__main__":
     main()
