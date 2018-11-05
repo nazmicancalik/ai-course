@@ -136,11 +136,15 @@ def bfs(g,start,dest, filename):
     
     if g.isMountain:
         path_len = path_length(path,g.matrix)
-        print(f'{path_len:.2f}',file=out_file)
+        print(f'{path_len:.2f}', end="" ,file=out_file)
     else:
-        print(f"{(len(path) - 1.0):.2f}", file=out_file)
+        print(f"{(len(path) - 1.0):.2f}", end="" ,file=out_file)
 
 def dfs(g,start,dest, filename):
+
+    out_filename = filename + '_mine_dfs_out.txt'
+    out_file = open(out_filename,'w')
+
     # Track Parents
     parent_map = {}
 
@@ -170,19 +174,23 @@ def dfs(g,start,dest, filename):
                 if child not in parent_map:
                     parent_map[child] = node
 
-    print_matrix(is_visited)
+    print_matrix(is_visited,out_file)
     path = dfs_path(parent_map,dest)
-    print(len(path))
-    print_list(path)
+    print(len(path),file=out_file)
+    print_list(path,out_file)
     
     if g.isMountain:
         path_len = path_length(path,g.matrix)
-        print(f'{path_len:.2f}')
+        print(f'{path_len:.2f}', end="" ,file=out_file)
     else:
-        print(f"{(len(path) - 1.0):.2f}")
+        print(f"{(len(path) - 1.0):.2f}", end="" ,file=out_file)
 
 def a_star(g,start,dest, filename):
     
+    # Open the files
+    out_filename = filename + '_mine_a_star_out.txt'
+    out_file = open(out_filename,'w')
+
     # Positions for checking the neighbours
     positions = [(0, 1), (1, 0), (-1, 0), (0, -1)]
     
@@ -217,10 +225,10 @@ def a_star(g,start,dest, filename):
                 path.append(current.position)
                 current = current.parent
             
-            print_matrix(is_visited)
+            print_matrix(is_visited,out_file)
             print(len(path))
-            print_list(path[::-1])
-            print(f"{current_node.g:.2f}")
+            print_list(path[::-1],out_file)
+            print(f"{current_node.g:.2f}",end="", file=out_file)
             break
 
         children = []
