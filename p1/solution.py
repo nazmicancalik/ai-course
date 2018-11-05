@@ -3,12 +3,38 @@
 import sys
 import math
 
+class Vertex:
+    def __init__(self,parent=None,position=None):
+        self.parent = parent
+        self.position = position
+
+        self.g = 0
+        self.h = 0
+        self.f = 0
+
+    def __eq__(self,other):
+        return self.position == other.position
+
+    def __lt__(self,other):
+        if self.f == other.f:
+            if self.position[0] > other.position[0]:
+                return True
+            elif self.position[0] < other.position[0]:
+                return False
+            else: 
+                return self.position[1] > other.position[1]
+        else:
+            return self.f < other.f
+            
+    def __repr__(self):
+        return str(self.position) + str(self.f)
 class Graph:
     def __init__(self, matrix, isMountain):
         self.data = {}
         self.row = len(matrix)
         self.col = len(matrix[0])
-        self.isMountain = isMountain 
+        self.isMountain = isMountain
+        self.matrix = matrix 
 
         # Here parse the values and create the graph
         for i, row in enumerate(matrix):
@@ -148,10 +174,187 @@ def dfs(g,start,dest):
         print(euclidian_distance(start,dest))
     else:
         print((len(path) - 1) * 1.00)
+'''
+def a_star(g,start,dest):
+    
+    # Positions for checking the neighbours
+    positions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+    
+    # Initialize the is visited matrix.
+    is_visited = [[0 for x in range(g.col)] for x in range(g.row)]
 
+    # Create the starting point
+    start_node = Vertex(None,start)
+    end_node = Vertex(None,dest)
+
+    open_list = []
+    closed_list = []
+
+    open_list.append(start_node)
+
+    while open_list:
+        current_node = open_list[0]
+        current_index = 0
+
+        # Get the desired node, according to priority
+        # TODO: ADD TIE BREAKER CONDITION
+        for index, item in enumerate(open_list):
+            if item.f < current_node.f:
+                current_node = item
+                current_index = index
+        
+        # Pop the current one from open list.
+        open_list.pop(current_index)
+        closed_list.append(current_node)
+
+        is_visited[current_node.position[0]][current_node.position[1]] = 1
+
+        # Check if it is the solution node
+        if current_node == end_node:
+            path = []
+            current = current_node
+            while current is not None:
+                path.append(current.position)
+                current = current.parent
+            
+            #return path[::-1]
+            print_matrix(is_visited)
+            print_list(len(path))
+            print_list(path[::-1])
+            print(len(path)-1.0)
+
+        children = []
+        for new_pos in positions:
+            # Construct the position to check
+            pos = (current_node.position[0] + new_pos[0], current_node.position[1] + new_pos[1])
+            
+            # If the new neighbour is not in the bounds
+            if (pos[0] > g.row - 1) or (pos[0] < 0) or (pos[1] > (g.col -1)) or (pos[1] < 0):
+                continue
+
+            # Check if its walkable
+            if g.isMountain:
+                if g.matrix[pos[0]][pos[1]] - g.matrix[current_node.position[0]][current_node.position[1]] > 1.0:
+                    continue
+            else:
+                if g.matrix[pos[0]][pos[1]] == 1:
+                    continue
+            
+            new_node = Vertex(current_node, pos)
+            children.append(new_node)
+
+        for child in children:
+            # If the child is in the closed list
+            for closed_child in closed_list:
+                if child == closed_child:
+                    continue
+            
+            # Calculate the g,f,h
+            if g.isMountain:
+                child.g = current_node.g + math.sqrt(1+((g.matrix[child.position[0]][child.position[1]] - g.matrix[current_node.position[0]][current_node.position[1]]))**2) 
+                child.h = math.sqrt((child.position[0] - end_node.position[0])**2  
+                        + (child.position[1] - end_node.position[1])**2 
+                        + ((g.matrix[child.position[0]][child.position[1]])-(g.matrix[end_node.position[0]][end_node.position[1]]))**2)
+            else:
+                child.g = current_node.g + 1
+                child.h = abs(end_node.position[0]-child.position[0]) + abs(end_node.position[1]-child.position[1])
+            child.f = child.g + child.h
+
+            # Child is already in the open list
+            if child not in open_list:
+                open_list.append(child)
+'''
+def a_star(g,start,dest):
+    
+    # Positions for checking the neighbours
+    positions = [(0, 1), (1, 0), (-1, 0), (0, -1)]
+    
+    # Initialize the is visited matrix.
+    is_visited = [[0 for x in range(g.col)] for x in range(g.row)]
+
+    # Create the starting point
+    start_node = Vertex(None,start)
+    end_node = Vertex(None,dest)
+
+    open_list = []
+    closed_list = []
+    open_list.append(start_node)
+
+    while open_list:
+        
+        # open_list.sort(key=lambda x: x.f, reverse=False)
+        open_list = sorted(open_list)
+
+        # Pop the current one from open list.
+        current_node = open_list.pop(0)
+        closed_list.append(current_node)
+
+        if is_visited[current_node.position[0]][current_node.position[1]] == 1:
+            continue
+
+        is_visited[current_node.position[0]][current_node.position[1]] = 1
+
+        # Check if it is the solution node
+        if current_node == end_node:
+            path = []
+            current = current_node
+            while current is not None:
+                path.append(current.position)
+                current = current.parent
+            
+            #return path[::-1]
+            print_matrix(is_visited)
+            print(len(path))
+            print_list(path[::-1])
+            print(current_node.g)
+            break
+
+        children = []
+        for new_pos in positions:
+            # Construct the position to check
+            pos = (current_node.position[0] + new_pos[0], current_node.position[1] + new_pos[1])
+            
+            # If the new neighbour is not in the bounds
+            if (pos[0] > g.row - 1) or (pos[0] < 0) or (pos[1] > (g.col -1)) or (pos[1] < 0):
+                continue
+
+            # Check if its walkable
+            if g.isMountain:
+                if g.matrix[pos[0]][pos[1]] - g.matrix[current_node.position[0]][current_node.position[1]] > 1.0:
+                    continue
+            else:
+                if g.matrix[pos[0]][pos[1]] == 1:
+                    continue
+            
+            new_node = Vertex(current_node, pos)
+            children.append(new_node)
+
+        for child in children:
+            # If the child is in the closed list ignore it
+            if child in closed_list:
+                continue
+            
+            # Calculate the g,f,h
+            if g.isMountain:
+                child.g = current_node.g + math.sqrt(1+((g.matrix[child.position[0]][child.position[1]] - g.matrix[current_node.position[0]][current_node.position[1]]))**2) 
+                child.h = math.sqrt((child.position[0] - end_node.position[0])**2  
+                        + (child.position[1] - end_node.position[1])**2 
+                        + ((g.matrix[child.position[0]][child.position[1]])-(g.matrix[end_node.position[0]][end_node.position[1]]))**2)
+            else:
+                child.g = current_node.g + 1
+                child.h = abs(end_node.position[0]-child.position[0]) + abs(end_node.position[1]-child.position[1])
+            child.f = child.g + child.h
+
+            # If the child is already in the open list
+            for open_node in open_list:
+                if child == open_node and child.g > open_node.g:
+                    continue
+
+            open_list.append(child)
 
 def euclidian_distance(a,b):
     return math.sqrt((a[0]-b[0])**2 + (b[1]-a[1])**2)
+
 # Prints a list of tuple in the asked format
 def print_list(l):
     for el in l:
@@ -208,7 +411,8 @@ def main():
 
     # graph.print_graph()
     # bfs(graph,start,dest)
-    dfs(graph,start,dest)
+    # dfs(graph,start,dest)
+    a_star(graph,start,dest)
 # Invoke main.
 if __name__ == "__main__":
     main()
