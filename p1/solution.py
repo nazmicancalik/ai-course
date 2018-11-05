@@ -226,7 +226,7 @@ def a_star(g,start,dest, filename):
                 current = current.parent
             
             print_matrix(is_visited,out_file)
-            print(len(path))
+            print(len(path),file=out_file)
             print_list(path[::-1],out_file)
             print(f"{current_node.g:.2f}",end="", file=out_file)
             break
