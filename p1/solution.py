@@ -131,9 +131,10 @@ def bfs(g,start,dest):
     print_list(path)
     
     if g.isMountain:
-        print(euclidian_distance(start,dest))
+        path_len = path_length(path,g.matrix)
+        print(f'{path_len:.2f}')
     else:
-        print((len(path) - 1) * 1.00)
+        print(f"{(len(path) - 1.0):.2f}")
 
 def dfs(g,start,dest):
     # Track Parents
@@ -171,99 +172,11 @@ def dfs(g,start,dest):
     print_list(path)
     
     if g.isMountain:
-        print(euclidian_distance(start,dest))
+        path_len = path_length(path,g.matrix)
+        print(f'{path_len:.2f}')
     else:
-        print((len(path) - 1) * 1.00)
-'''
-def a_star(g,start,dest):
-    
-    # Positions for checking the neighbours
-    positions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
-    
-    # Initialize the is visited matrix.
-    is_visited = [[0 for x in range(g.col)] for x in range(g.row)]
+        print(f"{(len(path) - 1.0):.2f}")
 
-    # Create the starting point
-    start_node = Vertex(None,start)
-    end_node = Vertex(None,dest)
-
-    open_list = []
-    closed_list = []
-
-    open_list.append(start_node)
-
-    while open_list:
-        current_node = open_list[0]
-        current_index = 0
-
-        # Get the desired node, according to priority
-        # TODO: ADD TIE BREAKER CONDITION
-        for index, item in enumerate(open_list):
-            if item.f < current_node.f:
-                current_node = item
-                current_index = index
-        
-        # Pop the current one from open list.
-        open_list.pop(current_index)
-        closed_list.append(current_node)
-
-        is_visited[current_node.position[0]][current_node.position[1]] = 1
-
-        # Check if it is the solution node
-        if current_node == end_node:
-            path = []
-            current = current_node
-            while current is not None:
-                path.append(current.position)
-                current = current.parent
-            
-            #return path[::-1]
-            print_matrix(is_visited)
-            print_list(len(path))
-            print_list(path[::-1])
-            print(len(path)-1.0)
-
-        children = []
-        for new_pos in positions:
-            # Construct the position to check
-            pos = (current_node.position[0] + new_pos[0], current_node.position[1] + new_pos[1])
-            
-            # If the new neighbour is not in the bounds
-            if (pos[0] > g.row - 1) or (pos[0] < 0) or (pos[1] > (g.col -1)) or (pos[1] < 0):
-                continue
-
-            # Check if its walkable
-            if g.isMountain:
-                if g.matrix[pos[0]][pos[1]] - g.matrix[current_node.position[0]][current_node.position[1]] > 1.0:
-                    continue
-            else:
-                if g.matrix[pos[0]][pos[1]] == 1:
-                    continue
-            
-            new_node = Vertex(current_node, pos)
-            children.append(new_node)
-
-        for child in children:
-            # If the child is in the closed list
-            for closed_child in closed_list:
-                if child == closed_child:
-                    continue
-            
-            # Calculate the g,f,h
-            if g.isMountain:
-                child.g = current_node.g + math.sqrt(1+((g.matrix[child.position[0]][child.position[1]] - g.matrix[current_node.position[0]][current_node.position[1]]))**2) 
-                child.h = math.sqrt((child.position[0] - end_node.position[0])**2  
-                        + (child.position[1] - end_node.position[1])**2 
-                        + ((g.matrix[child.position[0]][child.position[1]])-(g.matrix[end_node.position[0]][end_node.position[1]]))**2)
-            else:
-                child.g = current_node.g + 1
-                child.h = abs(end_node.position[0]-child.position[0]) + abs(end_node.position[1]-child.position[1])
-            child.f = child.g + child.h
-
-            # Child is already in the open list
-            if child not in open_list:
-                open_list.append(child)
-'''
 def a_star(g,start,dest):
     
     # Positions for checking the neighbours
@@ -296,11 +209,7 @@ def a_star(g,start,dest):
             continue
 
         is_visited[current_node.position[0]][current_node.position[1]] = 1
-        '''
-        print('*************')
-        print_matrix(is_visited)
-        print('*************')
-        '''
+        
         # Check if it is the solution node
         if current_node == end_node:
             path = []
@@ -359,8 +268,12 @@ def a_star(g,start,dest):
 
             open_list.append(child)
 
-def euclidian_distance(a,b):
-    return math.sqrt((a[0]-b[0])**2 + (b[1]-a[1])**2)
+def path_length(path,matrix):
+    path_length = 0
+    for i in range(len(path) - 1):
+        height_diff = matrix[path[i][0]][path[i][1]] - matrix[path[i+1][0]][path[i+1][1]]
+        path_length = path_length + math.sqrt(height_diff**2 + 1)
+    return path_length 
 
 # Prints a list of tuple in the asked format
 def print_list(l):
