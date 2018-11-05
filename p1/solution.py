@@ -4,11 +4,11 @@ import sys
 import math
 
 class Graph:
-    def __init__(self, matrix):
+    def __init__(self, matrix, isMountain):
         self.data = {}
         self.row = len(matrix)
         self.col = len(matrix[0])
-        self.isMountain = False 
+        self.isMountain = isMountain 
 
         # Here parse the values and create the graph
         for i, row in enumerate(matrix):
@@ -21,23 +21,41 @@ class Graph:
 
                 cur = matrix[i][j]
 
-                # Now get the neighbours
-                # Left 
-                if j > 0 and abs(matrix[i][j-1] - cur) < 1:
-                    left_neighbour = (i,j-1)
-                    self.data[v].append(left_neighbour)
-                # Right 
-                if j < len(matrix[0])-1 and abs(matrix[i][j+1] - cur) < 1:
-                    right_neighbour = (i,j+1)
-                    self.data[v].append(right_neighbour)
-                # Down
-                if i < len(matrix)-1 and abs(matrix[i+1][j] - cur) < 1:
-                    down_neighbour = (i+1,j)
-                    self.data[v].append(down_neighbour)
-                # Up 
-                if i > 0 and abs(matrix[i-1][j] - cur) < 1:
-                    upper_neighbour = (i-1,j)
-                    self.data[v].append(upper_neighbour)
+                # Now get the neighbours according to the problem type.
+                if self.isMountain:
+                    # Left 
+                    if j > 0 and abs(matrix[i][j-1] - cur) <= 1:
+                        left_neighbour = (i,j-1)
+                        self.data[v].append(left_neighbour)
+                    # Right 
+                    if j < len(matrix[0])-1 and abs(matrix[i][j+1] - cur) <= 1:
+                        right_neighbour = (i,j+1)
+                        self.data[v].append(right_neighbour)
+                    # Down
+                    if i < len(matrix)-1 and abs(matrix[i+1][j] - cur) <= 1:
+                        down_neighbour = (i+1,j)
+                        self.data[v].append(down_neighbour)
+                    # Up 
+                    if i > 0 and abs(matrix[i-1][j] - cur) <= 1:
+                        upper_neighbour = (i-1,j)
+                        self.data[v].append(upper_neighbour)
+                else:
+                    # Left 
+                    if j > 0 and matrix[i][j-1] != 1:
+                        left_neighbour = (i,j-1)
+                        self.data[v].append(left_neighbour)
+                    # Right 
+                    if j < len(matrix[0])-1 and matrix[i][j+1] != 1:
+                        right_neighbour = (i,j+1)
+                        self.data[v].append(right_neighbour)
+                    # Down
+                    if i < len(matrix)-1 and matrix[i+1][j] != 1:
+                        down_neighbour = (i+1,j)
+                        self.data[v].append(down_neighbour)
+                    # Up 
+                    if i > 0 and matrix[i-1][j] != 1:
+                        upper_neighbour = (i-1,j)
+                        self.data[v].append(upper_neighbour)
 
     def sort_bfs(self):
         for el in self.data:
@@ -70,11 +88,14 @@ def bfs(g,start,dest):
         path = queue.pop(0)
         # Get the last node from the path
         node = path[-1]
+
+        is_visited[node[0]][node[1]] = 1
+
         if node == dest:
-            break
+                    break
+        
         for neighbour in g.data[node]:
-            if is_visited[neighbour[0]][neighbour[1]] == 0:
-                is_visited[neighbour[0]][neighbour[1]] = 1
+            if is_visited[neighbour[0]][neighbour[1]] == 0:                
                 new_path = list(path)
                 new_path.append(neighbour)
                 queue.append(new_path)
@@ -111,19 +132,12 @@ def dfs(g,start,dest):
 
         if node == dest:
             break
-
         
-        # remove_from_stack = True
-        
-        for next_node in g.data[node]:
-            if is_visited[next_node[0]][next_node[1]] == 0:
-                stack.extend([next_node])
-                if next_node not in parent_map:
-                    parent_map[next_node] = node
-                # remove_from_stack = False
-            #    break
-        #if remove_from_stack:
-         #   stack.pop()
+        for child in g.data[node]:
+            if is_visited[child[0]][child[1]] == 0:
+                stack.extend([child])
+                if child not in parent_map:
+                    parent_map[child] = node
 
     print_matrix(is_visited)
     path = dfs_path(parent_map,dest)
@@ -186,14 +200,15 @@ def main():
     print('Start: ', start)
     print('Destination: ', dest)
 
-    graph = Graph(matrix)
-
     # Determine and assign graph type 
+    problemMountain = False 
     if 'mountain' in filename:
-        graph.isMountain = True
+        problemMountain = True
+    graph = Graph(matrix,problemMountain)
+
     # graph.print_graph()
-    bfs(graph,start,dest)
-    # dfs(graph,start,dest)
+    # bfs(graph,start,dest)
+    dfs(graph,start,dest)
 # Invoke main.
 if __name__ == "__main__":
     main()
