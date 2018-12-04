@@ -21,6 +21,13 @@
         (assert (inverse-ps ?symptom_id ?illness_name (- 1 ?ps)))
 )
 
+;Initializes person list
+(defrule init-person
+        (patient-said ?patient_id ? ?)
+        =>
+        (assert (person ?patient_id))
+)
+
 ; Finds s's for each person
 (defrule init-divisor
         (patient-said ?patient_id ? ?)
@@ -35,13 +42,14 @@
         ?toDeleteInversePs <-(inverse-ps ?symptom_id ?illness_name ?ps_no)
         ?oldResult <- (divisor ?patient_id ?oldValue) 
         =>
-        (retract ?toDeletePatient ?toDeletePs ?toDeleteInversePs)
+        (retract ?toDeletePatient)
+        (retract ?toDeletePs) 
+        (retract ?toDeleteInversePs)
         (assert (patient ?patient_id ?symptom_id ?answer) (ps_1 ?symptom_id ?illness_name ?ps_yes) (inverse-ps_1 ?symptom_id ?illness_name ?ps_no))
-        (printout t ?patient_id crlf)
         (if (eq ?answer yes)
                 then 
                         (retract ?oldResult)
-                        (assert (divisor ?patient_id (* ?oldValue ?ps_yes)))
+                        (assert (divisor  ?patient_id (* ?oldValue ?ps_yes)))
                 else 
                         (retract ?oldResult)
                         (assert (divisor ?patient_id (* ?oldValue ?ps_no)))
@@ -55,30 +63,31 @@
         ?toDeleteInversePs <-(inverse-ps_1 ?symptom_id ?illness_name ?ps_no)
         ?oldResult <- (divident ?illness_name ?patient_id ?oldValue) 
         =>
-        (retract ?toDeletePatient ?toDeletePs ?toDeleteInversePs)
-        (assert (patient-said ?patient_id ?symptom_id ?answer) (ps ?symptom_id ?illness_name ?ps_yes) (inverse-ps ?symptom_id ?illness_name ?ps_no))
-        (printout t ?patient_id crlf)
+        (retract ?toDeletePatient)
+        (retract ?toDeletePs) 
+        (retract ?toDeleteInversePs)
+        (assert (patient-said_1 ?patient_id ?symptom_id ?answer))
         (if (eq ?answer yes)
                 then 
-                        (retract ?oldResult),
-                        (assert (divident ?illness_name ?patient_id (* ?oldValue ?ps_yes)))
+                        (retract ?oldResult)
+                        (assert (divident  ?illness_name ?patient_id (* ?oldValue ?ps_yes)))
                 else 
                         (retract ?oldResult)
-                        (assert (divident ?illness_name ?patient_id (* ?oldValue ?ps_no)))
+                        (assert (divident  ?illness_name ?patient_id (* ?oldValue ?ps_no)))
         )
 )
 
 ; Division operation
 (defrule divide
         ?toDeleteDivident <- (divident ?illness_name ?patient_id ?divident_value)
-        ?toDeleteDivisor <- (divisor ?illness_name ?patient_id ?divisor_value)
+        ?toDeleteDivisor <- (divisor  ?patient_id ?divisor_value)
         =>
         (assert (result ?patient_id ?illness_name (/ ?divident_value ?divisor_value)))
 )
 
 ; Init the values that are going to hold the max probable illness for all patients
 (defrule init-most-probable
-        (patient-said ?patient_id 1 ?)
+        (person ?patient_id)
         =>
         (assert (most-probable-illness-for-patient ?patient_id null 0))
 )
