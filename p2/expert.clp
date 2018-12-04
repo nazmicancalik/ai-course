@@ -1,4 +1,11 @@
 ; Initializes the multiplication result for each patient and illness
+; Initialize final result
+(defrule init-diagnose
+        (patient-said ?patient_id 1 ?)
+        =>
+        (assert (diagnose ?patient_id none 0))
+)
+
 (defrule initPat
         (illness ?illness_name ?illness_prob)
         (patient-said ?patient_id ?symptom_id ?answer)
@@ -64,7 +71,6 @@
         ?toDeleteChanged <- (changed ?patient_id ?illness_name)
         =>
         (retract ?toDeleteChanged)
-        (printout t "ghgh" crlf)
         (retract ?toDeleteResult)
         (if (> (+ ?x_value ?y_value) 0)
                 then 
@@ -73,3 +79,19 @@
                 (assert (result ?patient_id ?illness_name -1))
         )       
 )
+
+(run)
+
+(defrule get-max
+        (result ?patient_id ?illness_name ?prob)
+        ?diagnose <- (diagnose ?patient_id ? ?oldMax)
+        =>
+        (printout t "sdsds" ctrlf)
+        (if (< ?oldMax ?prob)
+                then
+                (retract ?diagnose)
+                (assert (diagnose ?patient_id ?illness_name ?prob))
+        )
+)
+
+(run)
