@@ -1,5 +1,5 @@
 ; Initializes the multiplication result for each patient and illness
-(defrule initialize-probabilities
+(defrule initialize-divident
         (illness ?illness_name ?illness_prob)
         (patient-said ?patient_id ? ?)
         =>
@@ -14,29 +14,38 @@
         (assert (ps ?symptom_id ?illness_name (+ (* ?yes_prob ?illness_prob) (* ?no_prob (- 1 ?illness_prob)))))
 )
 
-(defrule
+; Finds inverse ps. 
+(defrule not-ps
         (ps ?symptom_id ?illness_name ?ps)
         =>
-        (assert ())
+        (assert (inverse-ps ?symptom_id ?illness_name (- 1 ?ps)))
 )
 
-
-; Tries to find the divident part of the patient,illness combination 
-(defrule get-divident-part
-        (illness ?illness_name ?illness_prob)
-        ?symptom_fact <- (symptom ?symptom_id ?illness_name ?yes_prob ?no_prob)
-        ?patient <- (patient-said ?patient_id ?symptom_id ?answer)
-        ?multiplication_divident_result <- (divident-part ?illness_name ?patient_id ?multiplication_result)
+; Finds s's for each person
+(defrule init-divisor
+        (patient-said ?patient_id ? ?)
         =>
-        (assert (divident-part-yes ?illness_name ?patient_id (* ?yes_prob ?multiplication_result)))
-        (retract ?multiplication_divident_result)
+        (assert (divisor ?patient_id 1))
 )
 
-(defrule get-final-prob
-        (divident-part ?illness_name ?patient_id ?final_yes_prob)
+;Calculates the divisor part
+(defrule calculate-divisor
+        ?toDeletePatient <- (patient-said ?patient_id ?symptom_id ?answer)
+        ?toDeletePs <-(ps ?symptom_id ?illness_name ?ps_yes)
+        ?toDeleteInversePs <-(inverse-ps ?symptom_id ?illness_name ?ps_no)
+        ?oldResult <- (divisor ?patient_id ?oldValue) 
         =>
-        (assert (patient_illness_probability (* ?final_yes_prob ?final_no_prob)))
+        (retract ?toDeletePatient ?toDeletePs ?toDeleteInversePs)
+        (assert (patient ?patient_id ?symptom_id ?answer) (ps_1 ?symptom_id ?illness_name ?ps_yes) (inverse-ps_1 ?symptom_id ?illness_name ?ps_no))
+        (printout t ?patient_id crlf)
+        (if (eq ?answer yes)
+                then 
+                        (retract ?oldResult)
+                        (printout t "yes" crlf)
+                        (assert (divisor ?patient_id (* ?oldValue ?ps_yes)))
+                else 
+                        (retract ?oldResult)
+                        (printout t "no" crlf)
+                        (assert (divisor ?patient_id (* ?oldValue ?ps_no)))
+        )
 )
-
-; GETS THE MAX POSSIBLE ILLNESS FOR PATIENTS
-;(defrule get-max-prob )
