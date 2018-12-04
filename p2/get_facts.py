@@ -75,7 +75,8 @@ def main():
         for i,item in enumerate(el):
             if i == 0:
                 continue
-            kb_file.write('(assert (patient-said ' + str(el[0]) + ' ' + str(i) + ' ' + str(item) + '))\n')
+            for illness in splitted_lines:
+                kb_file.write('(assert (patient-said ' + str(el[0]) + ' ' + str(i) + ' ' + str(item) + ' "' + illness[0] +'"))\n')
     kb_file.close()
 
 if __name__ == "__main__":
