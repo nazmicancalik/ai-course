@@ -21,10 +21,7 @@
 )
 
 
-; Tries to find the divident parts 
-; YES_RESULT = P(S1|H)P(S2|H)P(S3|H)...
-; NO_RESULT = P(S1|-H)P(S2|-H)P(S3|-H)...
-
+; Tries to find the divident part of the patient,illness combination 
 (defrule get-divident-part
         (illness ?illness_name ?illness_prob)
         ?symptom_fact <- (symptom ?symptom_id ?illness_name ?yes_prob ?no_prob)

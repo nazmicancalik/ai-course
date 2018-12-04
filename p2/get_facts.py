@@ -41,12 +41,11 @@ def main():
         final_illnesses.append(new_illness)
 
     # Now print to the file.
-    kb_file = open('./knowledge_base.clp', 'w+')
+    kb_file = open('./kb.clp', 'w+')
     for el in final_illnesses:
         kb_file.write('(assert (illness "' + str(el.name) + '" ' + str(el.prob) + '))\n')
         for s in el.symptoms:
             kb_file.write('(assert (symptom ' + str(s.index) + ' "' + str(el.name) + '" ' + str(s.probTrue) + ' ' + str(s.probFalse) +'))\n')
-    
     
     '''
     # INPUTS
