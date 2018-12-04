@@ -1,9 +1,9 @@
 ; Initializes the multiplication result for each patient and illness
-(defrule initialize-divident
+(defrule init-divident
         (illness ?illness_name ?illness_prob)
         (patient-said ?patient_id ? ?)
         =>
-        (assert(divident-part ?illness_name ?patient_id ?illness_prob))
+        (assert(divident ?illness_name ?patient_id ?illness_prob))
 )
 
 ; For all (symptomp,illness) combination get the values P(S) = P(S|H)P(H) + P(S|-H)P(-H)
@@ -41,11 +41,57 @@
         (if (eq ?answer yes)
                 then 
                         (retract ?oldResult)
-                        (printout t "yes" crlf)
                         (assert (divisor ?patient_id (* ?oldValue ?ps_yes)))
                 else 
                         (retract ?oldResult)
-                        (printout t "no" crlf)
                         (assert (divisor ?patient_id (* ?oldValue ?ps_no)))
+        )
+)
+
+;Calculates the divident part
+(defrule calculate-divident
+        ?toDeletePatient <- (patient ?patient_id ?symptom_id ?answer)
+        ?toDeletePs <-(ps_1 ?symptom_id ?illness_name ?ps_yes)
+        ?toDeleteInversePs <-(inverse-ps_1 ?symptom_id ?illness_name ?ps_no)
+        ?oldResult <- (divident ?illness_name ?patient_id ?oldValue) 
+        =>
+        (retract ?toDeletePatient ?toDeletePs ?toDeleteInversePs)
+        (assert (patient-said ?patient_id ?symptom_id ?answer) (ps ?symptom_id ?illness_name ?ps_yes) (inverse-ps ?symptom_id ?illness_name ?ps_no))
+        (printout t ?patient_id crlf)
+        (if (eq ?answer yes)
+                then 
+                        (retract ?oldResult),
+                        (assert (divident ?illness_name ?patient_id (* ?oldValue ?ps_yes)))
+                else 
+                        (retract ?oldResult)
+                        (assert (divident ?illness_name ?patient_id (* ?oldValue ?ps_no)))
+        )
+)
+
+; Division operation
+(defrule divide
+        ?toDeleteDivident <- (divident ?illness_name ?patient_id ?divident_value)
+        ?toDeleteDivisor <- (divisor ?illness_name ?patient_id ?divisor_value)
+        =>
+        (assert (result ?patient_id ?illness_name (/ ?divident_value ?divisor_value)))
+)
+
+; Init the values that are going to hold the max probable illness for all patients
+(defrule init-most-probable
+        (patient-said ?patient_id 1 ?)
+        =>
+        (assert (most-probable-illness-for-patient ?patient_id null 0))
+)
+
+; Find the maximum result for each patient.
+(defrule calculate
+        ?toDeleteResult <- (result ?patient_id ?illness_name ?prob)
+        ?toDeleteMostProbable <- (most-probable-illness-for-patient ?patient_id ?illness_name ?oldProb)
+        =>
+        (retract ?toDeleteResult)
+        (if (< ?oldProb ?prob)
+                then 
+                        (retract ?toDeleteMostProbable)
+                        (assert (most-probable-illness-for-patient ?patient_id ?illness_name ?prob))
         )
 )
