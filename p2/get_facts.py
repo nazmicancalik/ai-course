@@ -31,7 +31,7 @@ def main():
         new_illness = Illness(illness[0],illness[1])
         # Add the symptoms to the illness.
         i = 2
-        print illness[0]
+        print (illness[0])
         while (True):
             index = illness[i]
             if index == str(999):

@@ -14,6 +14,7 @@
 )
 
 ; Initializes the result values
+; Result is in the format of X/(X+Y) 
 (defrule initRes
         (illness ?illness_name ?illness_prob)
         (patient-said ?patient_id ?symptom_id ?answer)
@@ -86,12 +87,23 @@
         (result ?patient_id ?illness_name ?prob)
         ?diagnose <- (diagnose ?patient_id ? ?oldMax)
         =>
-        (printout t "sdsds" ctrlf)
         (if (< ?oldMax ?prob)
                 then
                 (retract ?diagnose)
                 (assert (diagnose ?patient_id ?illness_name ?prob))
         )
+)
+
+(run)
+
+; Opens an output file to write the input.
+(open "output.txt" output "w")
+
+; Prints out the results to a file.
+(defrule print-to-file
+        (diagnose ?patient_id ?illness_name ?prob)
+        =>
+        (printout output "Patient with id:  " ?patient_id " is " ?illness_name " with probabilty: " ?prob crlf)
 )
 
 (run)
