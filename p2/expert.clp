@@ -107,3 +107,6 @@
 )
 
 (run)
+
+; Close the file stream
+(close)
