@@ -61,9 +61,6 @@
         )
 )
 
-
-
-
 ; Division operation
 (defrule get-result
         ?toDeleteDivident <- (x ?illness_name ?patient_id ?x_value)
@@ -94,8 +91,6 @@
         )
 )
 
-(run)
-
 ; Opens an output file to write the input.
 (open "output.txt" output "w")
 
@@ -103,7 +98,10 @@
 (defrule print-to-file
         (diagnose ?patient_id ?illness_name ?prob)
         =>
-        (printout output "Patient with id:  " ?patient_id " is " ?illness_name " with probabilty: " ?prob crlf)
+        (if (neq ?illness_name none)
+                then
+                (printout output ?patient_id "," ?illness_name crlf)
+        )
 )
 
 (run)
